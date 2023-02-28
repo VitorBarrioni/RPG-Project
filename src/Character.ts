@@ -5,10 +5,10 @@ import Race, { Elf } from './Races';
 import getRandomInt from './utils';
 
 export default class Character implements Fighter {
-  private readonly _race: Race;
-  private readonly _archetype: Archetype;
-  private readonly _maxLifePoints: number;
-  private readonly _lifePoints: number;
+  private _race: Race;
+  private _archetype: Archetype;
+  private _maxLifePoints: number;
+  private _lifePoints: number;
   private _strength: number;
   private _defense: number;
   private _dexterity: number;
@@ -25,5 +25,56 @@ export default class Character implements Fighter {
       type_: this._archetype.energyType,
       amount: getRandomInt(1, 10),
     };
+  }
+
+  public get race(): Race {
+    return this._race;
+  }
+
+  public get archetype(): Archetype {
+    return this._archetype;
+  }
+
+  public get lifePoints(): number {
+    return this._lifePoints;
+  }
+
+  public get defense(): number {
+    return this._defense;
+  }
+
+  public get strength(): number {
+    return this._strength;
+  }
+
+  public get dexterity(): number {
+    return this._dexterity;
+  }
+
+  public get energy(): Energy {
+    return this._energy;
+  }
+
+  receiveDamage(attackPoints: number): number {
+    let damage = attackPoints - this._defense;
+    damage = damage > 0 ? damage : 1;
+    const newLife = this._lifePoints - damage;
+    return this._lifePoints <= 0 ? -1 : newLife;
+  }
+
+  attack(enemy: Fighter): void {
+    enemy.receiveDamage(this._strength);
+  }
+
+  levelUp(): void {
+    this._defense += getRandomInt(1, 10);
+    this._strength += getRandomInt(1, 10);
+    this._dexterity += getRandomInt(1, 10);
+    this._maxLifePoints += getRandomInt(1, 10);
+    this._energy.amount = 10;
+    this._maxLifePoints = this._maxLifePoints > this.race.maxLifePoints
+      ? this.race.maxLifePoints
+      : this._maxLifePoints;
+    this._lifePoints = this._maxLifePoints;
   }
 }
